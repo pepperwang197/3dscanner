@@ -35,25 +35,25 @@ int averageSensorValues(){
 
 void loop() {
 
-  motor1.write(45);
+  motor1.write(60);
   motor2.write(0);
   delay(5000);
 
   bool dir = 0; // true for going up, false for going down
-  int angle1 = 45;
+  int angle1 = 60;
   int angle2 = 0;
 
   int angleInterval = 1;
-  int delay = 4; // in milliseconds
+  int delayPerMotorRotation = 4; // in milliseconds
 
   for (; angle1<=135; angle1+=angleInterval){
     // Serial.println(phi);
     motor1.write(angle1);
-    delay(4);
+    delay(delayPerMotorRotation);
     if(dir){
       for (; angle2<60; angle2+=angleInterval){
         motor2.write(angle2);
-        delay(4);
+        delay(delayPerMotorRotation);
         Serial.println(angle1);
         // Serial.print(" ");
         Serial.println(angle2);
@@ -64,7 +64,7 @@ void loop() {
     } else {
       for (; angle2>0; angle2-=angleInterval){
         motor2.write(angle2);
-        delay(4);
+        delay(delayPerMotorRotation);
         Serial.println(angle1);
         // Serial.print(" ");
         Serial.println(angle2);

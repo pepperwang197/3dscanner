@@ -49,7 +49,7 @@ while True:
 
 
 try:
-  with open("data.json", "w") as f:
+  with open("file.json", "w") as f:
     json.dump(all_data, f)
 except Exception as e:
   print(e)
@@ -62,6 +62,6 @@ ax.set_xlabel("x")
 ax.set_ylabel("y")
 # ax.set_zlabel("z")
 
-ax.scatter(all_data[0], all_data[1], c=all_data[2], cmap="Greys", norm="linear")
+ax.scatter(all_data[0], all_data[1], c=all_data[2], cmap="RdPu", norm="linear")
 
 plt.show()
