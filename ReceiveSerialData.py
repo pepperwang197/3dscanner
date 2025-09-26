@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import json
 
+# Calibration curve formula
 def analogInputToDistance(input):
   return 1.9252e+04 * (input ** -1.0776)
 
@@ -11,9 +12,10 @@ arduinoComPort = "COM5"
 baudRate = 9600
 serialPort = serial.Serial(arduinoComPort, baudRate, timeout=1)
 
-data = []
-all_data = [[],[],[]]
+data = [] # Array to store one data point at a time
+all_data = [[],[],[]] # Array to store all data points
 
+# Loop until Arduino code finishes (and prints "hello world" to serial)
 while True:
   
   lineOfData = serialPort.readline().decode().strip()
@@ -23,45 +25,37 @@ while True:
     if (lineOfData=="hello world"):
       print("break")
       break
-    
-    # print(lineOfData)
   
     if(lineOfData=="next" and len(data)==3):
-    
-      all_data[0].append(data[0])
-      all_data[1].append(data[1])
-      all_data[2].append(data[2])
       
       theta = math.radians((data[0]) - 45)
       phi = math.radians((data[1]) + 60)
       rho = analogInputToDistance((data[2]))
       
-      # print((data[0]) - 45, (data[1]) + 60, rho)
-      
+      # Convert from spherical to rectangular coordinates
       x = rho * math.cos(theta) * math.sin(phi)
       y = rho * math.sin(theta) * math.sin(phi)
       z = rho * math.cos(phi)
       
+      # Add to data array
+      all_data[0].append(x)
+      all_data[1].append(y)
+      all_data[2].append(z)
+      
+      # Clear temporary data array
       data = []
       
     elif (lineOfData!="next"):
       data.append((int)(lineOfData))
 
+# Save data to JSON file
+with open("file.json", "w") as f:
+  json.dump(all_data, f)  
 
-try:
-  with open("file.json", "w") as f:
-    json.dump(all_data, f)
-except Exception as e:
-  print(e)
-  
-
+# Scatter plot
 fig = plt.figure()
-# ax = fig.add_subplot(projection='3d')
 ax = fig.add_subplot()
 ax.set_xlabel("x")
 ax.set_ylabel("y")
-# ax.set_zlabel("z")
-
-ax.scatter(all_data[0], all_data[1], c=all_data[2], cmap="RdPu", norm="linear")
-
+ax.scatter(all_data[0], all_data[1], s=15, marker="s", c=all_data[2], cmap="RdPu", norm="linear")
 plt.show()
